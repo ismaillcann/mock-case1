@@ -34,9 +34,9 @@ def main():
     while True:
         try:
             response = service.send_observation_as_http(observation)
-            print(f"Observation {observation} gönderildi. Status Code: {response.status_code}")
+            print(f"Observation {observation} sent. Status Code: {response.status_code}")
         except Exception as e:
-            print(f"Observation {observation} gönderilirken hata: {e}")
+            print(f"Observation {observation} sending error: {e}")
         observation += 1
         time.sleep(interval)
 
