@@ -1,0 +1,6 @@
+Flask
+redis
+influxdb
+pandas
+xlsxwriter
+fpdf
