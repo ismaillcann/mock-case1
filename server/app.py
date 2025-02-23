@@ -58,9 +58,11 @@ def generate_report():
     device_name = request.args.get("device_name")
     report_format = request.args.get("format", "pdf") # default to 'pdf' if not provided
 
+    # Validate required parameters
     if not (start and end and device_name):
         return jsonify({"error": "start, end, and device_name parameters are required "}), 400
     
+    # Query InfluxDB
     query = (
         f"SELECT * FROM sensor_measurement "
         f"WHERE device_name = '{device_name}' "
@@ -72,13 +74,13 @@ def generate_report():
     if not data_points:
         return jsonify({"error": "No data found for given parameters"}), 404
     
-    # Process the data based on requested format
+    # Excel report
     if report_format.lower() == 'excel':
         # create a Pandas DataFrame from the data
         df = pd.DataFrame(data_points)
         output = io.BytesIO()
         # write the DataFrame to an Excel file in memory
-        with pd.ExcelWriter(output, engine='xlswriter') as writer:
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, index=False, sheet_name='Report')
             writer.save()
         output.seek(0)
@@ -88,6 +90,8 @@ def generate_report():
             as_attachment=True,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+    
+    # PDF report
     elif report_format.lower() == 'pdf':
         pdf = FPDF()
         pdf.add_page()
